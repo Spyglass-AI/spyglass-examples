@@ -30,8 +30,7 @@ settings = Settings()
 # Configure Spyglass SDK programmatically
 configure_spyglass(
     api_key=settings.spyglass_api_key,
-    deployment_id=settings.spyglass_deployment_id,
-    endpoint="http://localhost:4318/v1/traces" # TODO: Only for local testing, do not commit
+    deployment_id=settings.spyglass_deployment_id
 )
 
 # Initialize FastAPI app
