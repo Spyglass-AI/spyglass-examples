@@ -20,7 +20,6 @@ EXAMPLE_DIRS = [
     "fastapi-langchain",
     "langchain-aws",
     "openai-simple",
-    "spyglass-example-project",
 ]
 
 # Pattern to match the commented/uncommented tool.uv.sources section

@@ -3,7 +3,7 @@ name = "spyglass-example-openai-simple"
 version = "0.1.0"
 description = "Simple OpenAI example with Spyglass tracing"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 dependencies = [
     "openai>=1.0.0",
     "pyyaml>=6.0",
@@ -17,6 +17,6 @@ build-backend = "hatchling.build"
 
 # Uncomment the section below to use the local spyglass-sdk for development
 # This assumes spyglass-sdk is located at ../../spyglass-sdk relative to this file
-# [tool.uv.sources]
-# spyglass-ai = { path = "../../spyglass-sdk", editable = true }
+[tool.uv.sources]
+spyglass-ai = { path = "../../spyglass-sdk", editable = true }
 

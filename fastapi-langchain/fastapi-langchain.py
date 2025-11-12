@@ -2,25 +2,33 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage
-from pydantic_settings import BaseSettings
-from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import BaseModel, Field
 from spyglass_ai import spyglass_trace, configure_spyglass, spyglass_chatopenai
+import logging
+
+# Configure logging to see DEBUG messages
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 
 
 class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
 
     # Spyglass configuration
-    spyglass_api_key: str = Field(..., env="SPYGLASS_API_KEY")
-    spyglass_deployment_id: str = Field(..., env="SPYGLASS_DEPLOYMENT_ID")
+    spyglass_api_key: str = Field(..., validation_alias="SPYGLASS_API_KEY")
+    spyglass_deployment_id: str = Field(..., validation_alias="SPYGLASS_DEPLOYMENT_ID")
 
     # OpenAI configuration
-    openai_api_key: str = Field(..., env="OPENAI_API_KEY")
-    openai_model: str = Field(default="gpt-3.5-turbo", env="OPENAI_MODEL")
+    openai_api_key: str = Field(..., validation_alias="OPENAI_API_KEY")
+    openai_model: str = Field(default="gpt-4.1-nano", validation_alias="OPENAI_MODEL")
 
-    class Config:
-        env_file = ".env"
-        case_sensitive = False
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        case_sensitive=False,
+    )
 
 
 # Load settings
@@ -30,6 +38,7 @@ settings = Settings()
 configure_spyglass(
     api_key=settings.spyglass_api_key,
     deployment_id=settings.spyglass_deployment_id,
+    endpoint="http://localhost:4318/v1/traces" # TODO: Only for local testing, do not commit
 )
 
 # Initialize FastAPI app
@@ -46,26 +55,26 @@ llm = ChatOpenAI(
 llm = spyglass_chatopenai(llm)
 
 
+class ChatRequest(BaseModel):
+    """Request model for chat endpoint."""
+
+    message: str = Field(..., description="The user message to send to the LLM")
+
+
 @app.get("/")
+@spyglass_trace()
 async def root():
     return {
         "message": "FastAPI LangChain Example - Use POST /chat to chat with the LLM"
     }
 
-
 @app.post("/chat")
 @spyglass_trace()
-async def chat(message: dict):
+async def chat(request: ChatRequest):
     """Chat endpoint that uses LangChain ChatOpenAI to generate a response."""
     try:
-        user_message = message.get("message", "")
-        if not user_message:
-            return JSONResponse(
-                status_code=400, content={"error": "Message is required"}
-            )
-
         # Call LangChain ChatOpenAI
-        response = await llm.ainvoke([HumanMessage(content=user_message)])
+        response = await llm.ainvoke([HumanMessage(content=request.message)])
 
         return {"response": response.content}
     except Exception as e:
@@ -75,4 +84,4 @@ async def chat(message: dict):
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8088)
