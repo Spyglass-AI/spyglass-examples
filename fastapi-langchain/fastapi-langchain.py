@@ -5,13 +5,6 @@ from langchain_core.messages import HumanMessage
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import BaseModel, Field
 from spyglass_ai import spyglass_trace, configure_spyglass, spyglass_chatopenai
-import logging
-
-# Configure logging to see DEBUG messages
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
 
 
 class Settings(BaseSettings):
