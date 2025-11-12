@@ -20,4 +20,4 @@ jobs:
           # This must match the deployment ID you set as an environment variable in your code
           DEPLOYMENT_ID: 'spyglass-example-project'
           # Specify the path to model.yaml in the subdirectory
-          MODEL_FILE_PATH: 'spyglass-example-project/model.yaml'
+          MODEL_FILE_PATH: 'openai-simple/model.yaml'

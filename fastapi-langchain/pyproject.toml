@@ -1,0 +1,27 @@
+[project]
+name = "spyglass-example-fastapi-langchain"
+version = "0.1.0"
+description = "FastAPI example with LangChain ChatOpenAI and Spyglass tracing"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    "langchain-openai>=0.1.0",
+    "langchain-core>=0.3.0",
+    "pydantic-settings>=2.0.0",
+    "spyglass-ai",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+only-include = ["fastapi-langchain.py"]
+
+# Uncomment the section below to use the local spyglass-sdk for development
+# This assumes spyglass-sdk is located at ../../spyglass-sdk relative to this file
+# [tool.uv.sources]
+# spyglass-ai = { path = "../../spyglass-sdk", editable = true }
+

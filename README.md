@@ -1,104 +1,195 @@
-# Spyglass Example Project
+# Spyglass Examples
 
-This is an example project demonstrating how to integrate with the Spyglass AI Platform for OpenAI API call tracing and monitoring.
-Follow these instructions to quickly get the telemetry from this application showing up in your Spyglass account.
+This repository contains example projects demonstrating how to integrate with the Spyglass AI Platform for AI observability and monitoring.
+
+Each example is a self-contained project with its own dependencies, making it easy to run with `uv`.
+
+## Available Examples
+
+### 1. OpenAI Simple (`openai-simple/`)
+
+A simple example demonstrating OpenAI API integration with Spyglass tracing.
+
+**Features:**
+- Basic OpenAI API calls with `spyglass_openai()` wrapper
+- Function tracing with `@spyglass_trace()` decorator
+- Model configuration via `model.yaml`
+- Error handling and retry logic
+
+**Quick Start:**
+```bash
+cd openai-simple
+uv sync
+cp .env.example .env
+# Edit .env with your API keys
+uv run openai-simple.py
+```
+
+### 2. LangChain AWS Bedrock (`langchain-aws/`)
+
+An advanced example demonstrating LangChain AWS Bedrock integration with Spyglass tracing and MCP (Model Context Protocol) tools.
+
+**Features:**
+- LangChain AWS Bedrock integration with `spyglass_chatbedrockconverse()`
+- MCP tools integration with `spyglass_mcp_tools_async()`
+- Async LLM calls with tool usage
+- OpenTelemetry GenAI semantic conventions
+
+**Quick Start:**
+```bash
+cd langchain-aws
+uv sync
+cp .env.example .env
+# Edit .env with your API keys and AWS credentials
+uv run langchain-aws.py
+```
+
+### 3. FastAPI LangChain (`fastapi-langchain/`)
+
+A minimal FastAPI server example demonstrating LangChain ChatOpenAI integration with Spyglass tracing.
+
+**Features:**
+- FastAPI server with REST API endpoint
+- LangChain ChatOpenAI integration
+- Function tracing with `@spyglass_trace()` decorator
+- Async LLM calls
+
+**Quick Start:**
+```bash
+cd fastapi-langchain
+uv sync
+cp .env.example .env
+# Edit .env with your API keys
+uv run fastapi-langchain.py
+# Or: uv run uvicorn fastapi-langchain:app --reload
+```
 
 ## Prerequisites
-1. An active GitHub account
-2. A Spyglass API Key. You can get one by logging into spyglass-ai.com, navigating to the Account section in the sidebar, and generating one from the API Keys tab.
 
+1. **uv**: Install from [https://github.com/astral-sh/uv](https://github.com/astral-sh/uv)
+   ```bash
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   ```
 
-## Application Setup
+2. **Spyglass API Key**: Get one by logging into [spyglass-ai.com](https://spyglass-ai.com), navigating to the Account section in the sidebar, and generating one from the API Keys tab.
 
-### 1. Create and Activate Virtual Environment
+3. **Example-specific prerequisites**: See each example's README for additional requirements (e.g., AWS credentials, Node.js for MCP tools).
 
-#### Using Python:
-```bash
-# Create virtual environment
-python -m venv venv
+## Project Structure
 
-# Activate virtual environment
-# On macOS/Linux:
-source venv/bin/activate
-# On Windows:
-venv\Scripts\activate
+```
+spyglass-examples/
+├── README.md                    # This file
+├── use-local-sdk.py            # Helper script for local SDK development
+├── openai-simple/              # Simple OpenAI example
+│   ├── openai-simple.py
+│   ├── model.yaml
+│   ├── pyproject.toml
+│   ├── README.md
+│   └── .env.example
+├── langchain-aws/              # LangChain AWS Bedrock example
+│   ├── langchain-aws.py
+│   ├── pyproject.toml
+│   ├── README.md
+│   └── .env.example
+└── fastapi-langchain/          # FastAPI LangChain example
+    ├── fastapi-langchain.py
+    ├── pyproject.toml
+    ├── README.md
+    └── .env.example
 ```
 
-#### Using uv:
-```bash
-# Create and activate virtual environment
-uv venv
-source .venv/bin/activate
-# On Windows:
-.venv\Scripts\activate
-```
+## Running Examples with uv
 
-### 2. Install Dependencies
+Each example is a standalone `uv` project. To run any example:
 
-#### Using regular Python:
-```bash
-pip install -e .
-```
+1. **Navigate to the example directory:**
+   ```bash
+   cd <example-name>
+   ```
 
-#### Using uv:
-```bash
-uv sync
-```
+2. **Install dependencies:**
+   ```bash
+   uv sync
+   ```
 
-### 3. Configure Environment Variables
+3. **Set up environment variables:**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your credentials
+   ```
 
-Copy the example environment file and fill in your API keys:
-
-```bash
-cp .env.example .env
-```
-
-Edit `.env` and set the following required variables:
-
-- **SPYGLASS_API_KEY**: Your Spyglass API key (get this from your Spyglass dashboard)
-- **SPYGLASS_DEPLOYMENT_ID**: Set to `spyglass-example-project` (this matches what we've predefined in the GitHub workflow in `.github/workflows/spyglass.yaml`)
-- **OPENAI_API_KEY**: Your OpenAI API key
-
-### 4. Configure Model Settings
-
-The `model.yaml` file contains your model configuration:
-- **model**: The OpenAI model to use (e.g., "gpt-4", "gpt-3.5-turbo")
-- **prompt**: The system prompt for your AI assistant
-
-### 5. Run the Example
-
-```bash
-python main.py
-```
-
-The application will:
-- Make OpenAI API calls every 3 seconds
-- Automatically trace all calls using this Spyglass SDK
-- Send telemetry data to the Spyglass platform in your account
+4. **Run the example:**
+   ```bash
+   uv run <script-name>.py
+   ```
 
 ## What Gets Traced
 
-This example demonstrates tracing for:
+All examples demonstrate tracing for:
 - **Function calls** using `@spyglass_trace()` decorator
-- **OpenAI API calls** using `spyglass_openai()` wrapper
+- **LLM API calls** using Spyglass wrappers
 - **Model usage, token consumption, and response times**
+- **Tool usage** (in examples that support it)
 
-View your analytics in the Spyglass AI dashboard after running the application.
+View your analytics in the Spyglass AI dashboard after running any example.
 
-## Github Action To Track Your Deployments
+## Local Development with spyglass-sdk
 
-The file at `.github/workflows/spyglass.yaml` is configured to track the model and prompt you are using. This is the most common source of performance issues in production deployments of LLMs so Spyglass makes it easier for you to track these changes over time.
+If you're developing the `spyglass-sdk` locally and want to test it with these examples, you can conditionally use the local SDK instead of the published version.
 
-To leverage this feature, follow these steps:
+### Quick Setup
 
-1. Create a new repo in your GitHub account and push this code to it. See instructions on doing this [here](https://docs.github.com/en/migrations/importing-source-code/using-the-command-line-to-import-source-code/adding-locally-hosted-code-to-github).
+Use the provided helper script to toggle local SDK usage. The script automatically runs `uv sync` in each updated example directory:
 
-2. Set the `SPYGLASS_API_KEY` secret in the GitHub repo you created.
-See instructions for this step [here](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets#creating-secrets-for-a-repository)
+```bash
+# Enable local SDK for all examples (automatically runs uv sync)
+uv run use-local-sdk.py enable
 
-Once you have created the repo and set your secret, push this code to the repo and the workflow will be kicked off.
-You can see the progress of the workflow in the Actions tab when viewing your repo on the GitHub website.
-Once the workflow runs successfully you can visit the Deployments tab in the Spyglass AI platform to see the 
-metadata that was captured. 
+# Disable local SDK (use published version, automatically runs uv sync)
+uv run use-local-sdk.py disable
 
-If you run into any issues feel free to contact us: team@spyglass-ai.com
+# Check current status
+uv run use-local-sdk.py status
+```
+
+### Manual Setup
+
+Alternatively, you can manually edit each example's `pyproject.toml` file. Look for the commented section at the bottom:
+
+```toml
+# Uncomment the section below to use the local spyglass-sdk for development
+# This assumes spyglass-sdk is located at ../../spyglass-sdk relative to this file
+# [tool.uv.sources]
+# spyglass-ai = { path = "../../spyglass-sdk", editable = true }
+```
+
+Uncomment the `[tool.uv.sources]` section to use the local SDK, or comment it out to use the published version.
+
+**Note:** 
+- This assumes `spyglass-sdk` is located at `../../spyglass-sdk` relative to each example directory. Adjust the path if your directory structure differs.
+- After manually editing `pyproject.toml`, run `uv sync` in each example directory to apply the changes.
+
+## Adding New Examples
+
+To add a new example:
+
+1. Create a new directory: `mkdir <example-name>`
+2. Create a `pyproject.toml` with the example's dependencies
+3. Add your example script(s)
+4. Create a `README.md` with setup instructions
+5. Create a `.env.example` file with required environment variables
+6. Update this README to include your new example
+
+## GitHub Actions Integration
+
+Some examples may include GitHub Actions workflows for deployment tracking. These workflows track model and prompt changes over time, helping identify performance issues in production deployments.
+
+To use GitHub Actions:
+1. Create a new GitHub repository and push the example code
+2. Set the `SPYGLASS_API_KEY` secret in your repository settings
+3. Push code to trigger the workflow
+
+## Support
+
+If you run into any issues, feel free to contact us: team@spyglass-ai.com

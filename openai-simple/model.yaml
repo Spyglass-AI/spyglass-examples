@@ -1,0 +1,16 @@
+# Example model.yaml file for Spyglass Deployment Action
+# Copy this file to model.yaml and customize for your deployment
+
+# Human-readable name for the deployment
+name: "Spyglass Example Project"
+# Description of the app
+description: "Example project for Spyglass AI Platform"
+# The model used in your app (e.g., "GPT-4", "Claude 3.5 Sonnet", "DeepSeek R1")
+# This should be the string you are passing into your OpenAI client
+model: "gpt-4.1-nano"
+# The system prompt you are using in your application
+prompt: |
+  You are a helpful AI assistant that provides accurate and concise information.
+  Always be polite and professional in your responses.
+  If you're unsure about something, acknowledge your uncertainty.
+
